@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, Navigate, useNavigate } from 'react-router-dom';
 import { Loader2, Eye, EyeOff, TrendingUp, CheckCircle2 } from 'lucide-react';
 import { useAuth } from '@/auth/AuthContext';
 import { Button } from '@/components/ui/button';
@@ -25,13 +25,12 @@ interface SignupForm {
 }
 
 export const Signup: React.FC = () => {
-  const { register } = useAuth();
+  const { register, isAuthenticated, isLoading: isAuthLoading } = useAuth();
   const navigate = useNavigate();
   const [showPwd, setShowPwd] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
-
   const [form, setForm] = useState<SignupForm>({
     firstName: '',
     lastName: '',
@@ -40,6 +39,19 @@ export const Signup: React.FC = () => {
     password: '',
     dateOfBirth: '',
   });
+
+  // Show spinner while auth resolves (refresh in-flight)
+  if (isAuthLoading) {
+    return (
+      <div className="flex h-screen items-center justify-center bg-background">
+        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
+
+  // Already authenticated — redirect to dashboard
+  if (isAuthenticated) return <Navigate to="/dashboard" replace />;
+
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
