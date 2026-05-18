@@ -1,5 +1,5 @@
 import React from 'react';
-import { Tag, CreditCard, Receipt } from 'lucide-react';
+import { CreditCard, Receipt } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 
 interface PlaceholderPageProps {
@@ -25,14 +25,6 @@ const PlaceholderPage: React.FC<PlaceholderPageProps> = ({ icon, title, descript
       </CardContent>
     </Card>
   </div>
-);
-
-export const Categories: React.FC = () => (
-  <PlaceholderPage
-    icon={<Tag className="h-8 w-8" />}
-    title="Categories"
-    description="Manage your expense categories and icons."
-  />
 );
 
 export const PaymentModes: React.FC = () => (

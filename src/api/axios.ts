@@ -31,6 +31,11 @@ api.interceptors.request.use((config) => {
 let isRefreshing = false;
 let refreshSubscribers: Array<(token: string) => void> = [];
 
+let onSessionExpiredCallback: (() => void) | null = null;
+export const setOnSessionExpired = (cb: () => void) => {
+  onSessionExpiredCallback = cb;
+};
+
 const subscribeTokenRefresh = (cb: (token: string) => void) => {
   refreshSubscribers.push(cb);
 };
@@ -70,8 +75,11 @@ api.interceptors.response.use(
         originalRequest.headers['Authorization'] = `Bearer ${data.accessToken}`;
         return api(originalRequest);
       } catch (_refreshError) {
-        // Refresh failed — clear token and let app handle redirect
+        // Refresh failed — clear token and force app logout
         _accessToken = null;
+        if (onSessionExpiredCallback) {
+          onSessionExpiredCallback();
+        }
         return Promise.reject(_refreshError);
       } finally {
         isRefreshing = false;

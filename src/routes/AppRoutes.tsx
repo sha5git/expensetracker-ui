@@ -3,7 +3,8 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { Login } from '@/pages/Login';
 import { Signup } from '@/pages/Signup';
 import { Dashboard } from '@/pages/Dashboard';
-import { Categories, PaymentModes, Expenses } from '@/pages/Placeholders';
+import { Categories } from '@/pages/Categories';
+import { PaymentModes, Expenses } from '@/pages/Placeholders';
 import { ProtectedRoute } from '@/components/ProtectedRoute';
 import { Sidebar } from '@/components/Sidebar';
 

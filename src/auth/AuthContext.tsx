@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useEffect, useRef, useState, useCallback } from 'react';
 import { authService, type AuthUser, type LoginRequest, type RegisterRequest } from './authService';
+import { setOnSessionExpired } from '@/api/axios';
 
 interface AuthContextValue {
   user: Omit<AuthUser, 'accessToken'> | null;
@@ -21,6 +22,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const didRestoreRef = useRef(false);
 
   useEffect(() => {
+    // Register the global interceptor callback to clear user state if a background refresh fails
+    setOnSessionExpired(() => {
+      setUser(null);
+    });
+
     if (didRestoreRef.current) return; // already ran — skip second StrictMode call
     didRestoreRef.current = true;
 
@@ -45,8 +51,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, []);
 
   const logout = useCallback(async () => {
-    await authService.logout();
-    setUser(null);
+    try {
+      await authService.logout();
+    } catch (err) {
+      console.warn('Backend logout failed or was already unauthorized', err);
+    } finally {
+      setUser(null);
+    }
   }, []);
 
   return (
